@@ -9,6 +9,7 @@ pub trait File: Send + Sync {
     fn writable(&self) -> bool;
     fn read(&self, buf: UserBuffer) -> usize;
     fn write(&self, buf: UserBuffer) -> usize;
+    fn fstat(&self) -> (u64, StatMode, u32);
 }
 
 /// The stat of a inode
@@ -41,3 +42,20 @@ bitflags! {
 
 pub use inode::{list_apps, open_file, OSInode, OpenFlags};
 pub use stdio::{Stdin, Stdout};
+
+pub fn linkat(old_name: &str, new_name: &str) -> isize {
+    if let Some(inode) = inode::ROOT_INODE.find(old_name) {
+        let inode_id = inode.get_id() as u32;
+        inode::ROOT_INODE.create_link(inode_id, new_name)
+    } else {
+        return -1;
+    }
+}
+
+pub fn unlinkat(name: &str) -> isize {
+    if let Some(inode) = inode::ROOT_INODE.find(name) {
+        inode::ROOT_INODE.remove(name)
+    } else {
+        return -1;
+    }
+}
