@@ -81,10 +81,7 @@ pub fn sys_fstat(fd: usize, st: *mut Stat) -> isize {
 
     let inner = task.inner_exclusive_access();
 
-    if fd >= inner.fd_table.len() {
-        return -1;
-    }
-    if inner.fd_table[fd].is_none() {
+    if fd >= inner.fd_table.len() || inner.fd_table[fd].is_none() {
         return -1;
     }
     if let Some(file) = &inner.fd_table[fd] {
