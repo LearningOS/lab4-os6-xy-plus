@@ -88,7 +88,7 @@ pub fn sys_fstat(fd: usize, st: *mut Stat) -> isize {
         return -1;
     }
     if let Some(file) = &inner.fd_table[fd] {
-        let (id, stat_mode, nlink) = file.fstat().clone();
+        let (id, stat_mode, nlink) = file.fstat();
         st.dev = 0;
         st.ino = id;
         st.mode = stat_mode;
